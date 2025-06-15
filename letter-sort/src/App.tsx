@@ -13,11 +13,17 @@ import {
     type Letter,
 } from './data/letters';
 
-const SND = {
-    correct: new Audio('/sounds/correct_match.mp3'),
-    wrong:   new Audio('/sounds/incorrect_match.mp3'),
-    win:     new Audio('/sounds/win.mp3'),
-    lose:    new Audio('/sounds/lose.mp3'),
+/* źródła dźwięków */
+const SND_SRC = {
+    correct: '/sounds/correct_match.mp3',
+    wrong:   '/sounds/incorrect_match.mp3',
+    win:     '/sounds/win.mp3',
+    lose:    '/sounds/lose.mp3',
+};
+/* helper – zawsze nowy obiekt Audio */
+const playSound = (key: keyof typeof SND_SRC) => {
+    const a = new Audio(SND_SRC[key]);
+    a.play().catch(() => {});
 };
 
 const MAX_LVL = 3;
@@ -28,9 +34,9 @@ export default function App() {
     const [longSticks, setLongSticks] = useState<Letter[]>([]);
     const [noSticks, setNoSticks]     = useState<Letter[]>([]);
     const [locked, setLocked]         = useState(false);
-    const [audioOn, setAudioOn]       = useState(false);          // start OFF
+    const [audioOn, setAudioOn]       = useState(false);
 
-    /* --- fix: dostęp do NAJNOWSZEGO audioOn w każdej funkcji --- */
+    /* aktualny stan audioOn w ref */
     const audioRef = useRef(audioOn);
     useEffect(() => { audioRef.current = audioOn; }, [audioOn]);
 
@@ -55,27 +61,24 @@ export default function App() {
         noSticks:   [noSticks,   setNoSticks]   as const,
     };
 
+    /* ── TTS litery ─────────────────────────── */
     const onDragStart = ({ draggableId }: DragStart) => {
-        const l = [...bank, ...longSticks, ...noSticks].find(
-            x => x.id === draggableId
-        );
+        const l = [...bank, ...longSticks, ...noSticks].find(x => x.id === draggableId);
         if (!l) return;
-        const label =
-            l.char === l.char.toUpperCase()
-                ? `uppercase ${l.char}`
-                : `lowercase ${l.char}`;
+        const label = l.char === l.char.toUpperCase()
+            ? `uppercase ${l.char}`
+            : `lowercase ${l.char}`;
         speak(label);
     };
 
+    /* ── obsługa dropu ──────────────────────── */
     const onDragEnd = ({ source, destination }: DropResult) => {
         if (locked || !destination) return;
-        if (source.droppableId === destination.droppableId &&
-            source.index === destination.index) return;
+        if (source.droppableId === destination.droppableId && source.index === destination.index)
+            return;
 
-        const [srcArr, setSrc] =
-            listMap[source.droppableId as keyof typeof listMap];
-        const [dstArr, setDst] =
-            listMap[destination.droppableId as keyof typeof listMap];
+        const [srcArr, setSrc] = listMap[source.droppableId as keyof typeof listMap];
+        const [dstArr, setDst] = listMap[destination.droppableId as keyof typeof listMap];
 
         const [moved] = srcArr.splice(source.index, 1);
         dstArr.splice(destination.index, 0, moved);
@@ -85,12 +88,12 @@ export default function App() {
 
         if (destination.droppableId !== 'bank') {
             const correct =
-                isLongStick(moved.char) ===
-                (destination.droppableId === 'longSticks');
-            (correct ? SND.correct : SND.wrong).play();
+                isLongStick(moved.char) === (destination.droppableId === 'longSticks');
+            playSound(correct ? 'correct' : 'wrong');
         }
     };
 
+    /* ── koniec rundy ───────────────────────── */
     useEffect(() => {
         if (bank.length > 0) return;
 
@@ -99,18 +102,18 @@ export default function App() {
             longSticks.every(l => isLongStick(l.char)) &&
             noSticks.every(l => !isLongStick(l.char));
 
-        (allCorrect ? SND.win : SND.lose).play();
+        playSound(allCorrect ? 'win' : 'lose');
 
-        const nextLvl = allCorrect ? Math.min(level + 1, MAX_LVL) : level;
-
+        const next = allCorrect ? Math.min(level + 1, MAX_LVL) : level;
         const id = setTimeout(() => {
-            setLevel(nextLvl);
-            startRound(nextLvl);
+            setLevel(next);
+            startRound(next);
         }, 2500);
 
         return () => clearTimeout(id);
     }, [bank.length, longSticks, noSticks, level]);
 
+    /* ── UI ─────────────────────────────────── */
     return (
         <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
             <header className="header">
@@ -127,11 +130,7 @@ export default function App() {
             <h2 className="subtitle">Level {level + 1}</h2>
 
             <div className="frame">
-                <SortBoard
-                    longSticks={longSticks}
-                    noSticks={noSticks}
-                    locked={locked}
-                />
+                <SortBoard longSticks={longSticks} noSticks={noSticks} locked={locked} />
                 <LetterBank letters={bank} locked={locked} />
             </div>
         </DragDropContext>

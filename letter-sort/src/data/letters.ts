@@ -3,7 +3,7 @@ export const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz'];
 const LONG_LOWER = ['b', 'd', 'f', 'h', 'k', 'l', 't', 'p', 'q', 'j', 'y'];
 const LONG_UPPER = [
     'A', 'B', 'D', 'F', 'H', 'I', 'J', 'K', 'L', 'P',
-    'T', 'Y', 'V', 'Z', 'X', 'Q', 'E', 'R', 'W', 'N', 'M'
+    'T', 'Y', 'V', 'Z', 'X', 'E', 'R', 'W', 'N', 'M'
 ];
 
 export const isLongStick = (ch: string) =>
