@@ -12,38 +12,40 @@ import {
 
 const SND = {
     correct: new Audio('/sounds/correct_match.mp3'),
-    wrong: new Audio('/sounds/incorrect_match.mp3'),
-    win: new Audio('/sounds/win.mp3'),
-    lose: new Audio('/sounds/lose.mp3'),
+    wrong:   new Audio('/sounds/incorrect_match.mp3'),
+    win:     new Audio('/sounds/win.mp3'),
+    lose:    new Audio('/sounds/lose.mp3'),
 };
 
 const MAX_LVL = 3;
 
 export default function App() {
-    const [level, setLevel] = useState(0);
-    const [bank, setBank] = useState<Letter[]>(() => generateLetters(0));
+    const [level, setLevel]           = useState(0);
+    const [bank, setBank]             = useState<Letter[]>(() => generateLetters(0));
     const [longSticks, setLongSticks] = useState<Letter[]>([]);
-    const [noSticks, setNoSticks] = useState<Letter[]>([]);
+    const [noSticks,  setNoSticks]    = useState<Letter[]>([]);
+    const [locked, setLocked]         = useState(false);
 
     const startRound = (lvl: number) => {
         setBank(generateLetters(lvl));
         setLongSticks([]);
         setNoSticks([]);
+        setLocked(false);
     };
 
     const listMap = {
-        bank: [bank, setBank] as const,
+        bank:       [bank,       setBank]       as const,
         longSticks: [longSticks, setLongSticks] as const,
-        noSticks: [noSticks, setNoSticks] as const,
+        noSticks:   [noSticks,   setNoSticks]   as const,
     };
 
     const onDragEnd = ({ source, destination }: DropResult) => {
+        if (locked) return;
         if (!destination) return;
         if (
             source.droppableId === destination.droppableId &&
-            source.index === destination.index
-        )
-            return;
+            source.index       === destination.index
+        ) return;
 
         const [srcArr, setSrc] =
             listMap[source.droppableId as keyof typeof listMap];
@@ -69,6 +71,7 @@ export default function App() {
     useEffect(() => {
         if (bank.length > 0) return;
 
+        setLocked(true);
         const allCorrect =
             longSticks.every((l) => isLongStick(l.char)) &&
             noSticks.every((l) => !isLongStick(l.char));
@@ -95,8 +98,8 @@ export default function App() {
             <h2 className="subtitle">Level {level + 1}</h2>
 
             <div className="frame">
-                <SortBoard longSticks={longSticks} noSticks={noSticks} />
-                <LetterBank letters={bank} />
+                <SortBoard longSticks={longSticks} noSticks={noSticks} locked={locked} />
+                <LetterBank letters={bank} locked={locked} />
             </div>
         </DragDropContext>
     );

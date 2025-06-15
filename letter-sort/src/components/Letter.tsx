@@ -1,15 +1,19 @@
 import { Draggable } from '@hello-pangea/dnd';
 import type { Letter } from './types';
 
-type Props = { letter: Letter; index: number };
+type Props = { letter: Letter; index: number; locked: boolean };
 
-export default function Letter({ letter, index }: Props) {
+export default function Letter({ letter, index, locked }: Props) {
     const palette = ['blue', 'green', 'red', 'orange'];
     const color =
         palette[(letter.char.toLowerCase().charCodeAt(0) - 97) % palette.length];
 
     return (
-        <Draggable draggableId={letter.id} index={index}>
+        <Draggable
+            draggableId={letter.id}
+            index={index}
+            isDragDisabled={locked}
+        >
             {(provided, snapshot) => {
                 const translate = provided.draggableProps.style?.transform ?? '';
                 const scale = snapshot.isDragging ? 1.15 : 1;

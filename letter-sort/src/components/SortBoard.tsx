@@ -5,36 +5,35 @@ import type { Letter as L } from './types';
 type Props = {
     longSticks: L[];
     noSticks: L[];
+    locked: boolean;
 };
 
 const Column = ({
                     id,
                     letters,
+                    locked,
                 }: {
-    id: string;
-    title: string;
+    id: 'longSticks' | 'noSticks';
     letters: L[];
+    locked: boolean;
 }) => (
-    <div className="column-wrapper">
-        <Droppable droppableId={id}>
-            {(provided) => (
-                <div
-                    className="column-droppable"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                >
-                    {letters.map((l, i) => (
-                        <Letter key={l.id} letter={l} index={i} />
-                    ))}
-                    {provided.placeholder}
-                </div>
-            )}
-        </Droppable>
-    </div>
+    <Droppable droppableId={id} isDropDisabled={locked}>
+        {(provided) => (
+            <div
+                className="column-droppable"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+            >
+                {letters.map((l, i) => (
+                    <Letter key={l.id} letter={l} index={i} locked={locked} />
+                ))}
+                {provided.placeholder}
+            </div>
+        )}
+    </Droppable>
 );
 
-
-export default function SortBoard({ longSticks, noSticks }: Props) {
+export default function SortBoard({ longSticks, noSticks, locked }: Props) {
     return (
         <section className="board-top">
             <h2 className="board-title">Sort the letters’</h2>
@@ -43,9 +42,9 @@ export default function SortBoard({ longSticks, noSticks }: Props) {
                 <h3 className="column-label no-long">no long sticks</h3>
             </div>
             <div className="board-content">
-                <Column id="longSticks" title="long sticks" letters={longSticks} />
-                <Column id="noSticks" title="no long sticks" letters={noSticks} />
+                <Column id="longSticks" letters={longSticks} locked={locked}/>
+                <Column id="noSticks" letters={noSticks} locked={locked}/>
             </div>
         </section>
-    );
+);
 }
