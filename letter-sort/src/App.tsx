@@ -28,7 +28,6 @@ export default function App() {
         const [moved] = sourceArr.splice(source.index, 1);
         destArr.splice(destination.index, 0, moved);
 
-        // trigger re-render
         setSource([...sourceArr]);
         setDest([...destArr]);
 
@@ -46,8 +45,10 @@ export default function App() {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <h1 className="title">Letter Sort</h1>
-            <SortBoard longSticks={longSticks} noSticks={noSticks} />
-            <LetterBank bank={bank} />
+            <div className="frame">
+                <SortBoard longSticks={longSticks} noSticks={noSticks} />
+                <LetterBank bank={bank} />
+            </div>
         </DragDropContext>
     );
 }

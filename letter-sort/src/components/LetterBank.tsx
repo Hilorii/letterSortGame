@@ -7,7 +7,6 @@ type Props = { bank: L[] };
 export default function LetterBank({ bank }: Props) {
     return (
         <section className="bank">
-            <h2>Letters to sort</h2>
             <Droppable droppableId="bank" direction="horizontal">
                 {provided => (
                     <div

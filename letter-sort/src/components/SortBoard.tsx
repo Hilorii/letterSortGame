@@ -10,30 +10,40 @@ type Props = {
 const Column = ({
                     id,
                     title,
-                    letters
+                    letters,
                 }: {
     id: string;
     title: string;
     letters: L[];
 }) => (
-    <Droppable droppableId={id}>
-        {provided => (
-            <div className="column" ref={provided.innerRef} {...provided.droppableProps}>
-                <h3>{title}</h3>
-                {letters.map((l, i) => (
-                    <Letter key={l.id} letter={l} index={i} />
-                ))}
-                {provided.placeholder}
-            </div>
-        )}
-    </Droppable>
+    <div className="column-wrapper">
+        <h3 className="column-label">{title}</h3>
+        <Droppable droppableId={id}>
+            {(provided) => (
+                <div
+                    className="column-droppable"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                >
+                    {letters.map((l, i) => (
+                        <Letter key={l.id} letter={l} index={i} />
+                    ))}
+                    {provided.placeholder}
+                </div>
+            )}
+        </Droppable>
+    </div>
 );
+
 
 export default function SortBoard({ longSticks, noSticks }: Props) {
     return (
-        <section className="board">
-            <Column id="longSticks" title="long sticks" letters={longSticks} />
-            <Column id="noSticks" title="no long sticks" letters={noSticks} />
+        <section className="board-top">
+            <h2 className="board-title">Sort the letters’</h2>
+            <div className="board-content">
+                <Column id="longSticks" title="long sticks" letters={longSticks} />
+                <Column id="noSticks" title="no long sticks" letters={noSticks} />
+            </div>
         </section>
     );
 }
