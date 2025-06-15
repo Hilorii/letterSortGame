@@ -1,9 +1,14 @@
 import { Draggable } from '@hello-pangea/dnd';
-import type { Letter } from './types.ts';
+import type { Letter } from './types';
 
 type Props = { letter: Letter; index: number };
 
 export default function Letter({ letter, index }: Props) {
+    const palette = ['blue', 'green', 'red', 'orange'];
+    const color = palette[
+    (letter.char.toLowerCase().charCodeAt(0) - 97) % palette.length
+        ];
+
     return (
         <Draggable draggableId={letter.id} index={index}>
             {(provided, snapshot) => (
@@ -11,6 +16,8 @@ export default function Letter({ letter, index }: Props) {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
+                    data-color={color}
+                    className={`letter ${snapshot.isDragging ? 'dragging' : ''}`}
                     style={{
                         ...provided.draggableProps.style,
                         transform: snapshot.isDragging
@@ -18,7 +25,6 @@ export default function Letter({ letter, index }: Props) {
                             : provided.draggableProps.style?.transform,
                         transition: snapshot.isDragging ? 'transform .15s ease' : undefined,
                     }}
-                    className="letter"
                 >
                     {letter.char}
                 </div>

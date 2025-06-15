@@ -17,11 +17,10 @@ body {
 
 /* ---------- 2. Nagłówek i opis ---------- */
 .title {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 800;
     text-align: center;
     margin: 0;
-    /* żółty tekst z fioletowym obrysem */
     color: #ffd33d;
     -webkit-text-stroke: 3px #4b2dbb;
 }
@@ -47,9 +46,9 @@ body {
 /* ---------- 4. Pole robocze (niebieskie) ---------- */
 .board-top {
     border: 4px solid #034d71;
-    background: #00699c;
+    background: #0686c5;
     border-radius: 16px;
-    padding: 1.2rem;
+    padding: 0 1rem 1rem;
     margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
@@ -75,6 +74,7 @@ body {
 .board-title {
     background-color: #e95420;
     color: white;
+    font-weight: 600;
     padding: 0.2rem 1rem;
     border-radius: 8px;
     font-size: 1.5rem;
@@ -96,9 +96,9 @@ body {
     position: absolute;
     content: "";
     right: 50%;
-    top: -30%;
+    top: -15%;
     width: 4px;
-    height: 130%;
+    height: 115%;
     background: #034d71;
 }
 
@@ -127,8 +127,8 @@ body {
 }
 
 .column-droppable {
-    min-height: 140px;
-    min-width: 250px;
+    min-height: 260px;
+    min-width: 260px;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -138,6 +138,7 @@ body {
 
 /* ---------- 8. Bank liter ---------- */
 .bank {
+    min-height: 100px;
     padding: 1.2rem;
     margin: -1rem;
     background: #fdf8de;
@@ -155,23 +156,26 @@ body {
     width: 46px;
     height: 46px;
     border-radius: 8px;
-    font-size: 1.85rem;
+    font-size: 4rem;
+    font-family: 'Baloo 2', cursive;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    text-shadow: 1px 1px 2px #0004;
-    transition: transform 0.15s ease, box-shadow 0.15s;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     cursor: grab;
+    transition: transform .15s ease, box-shadow .15s ease;
+    user-select: none;
 }
 .letter:active { cursor: grabbing; }
-.letter[data-color="blue"]   { background:#2872d5; }
-.letter[data-color="green"]  { background:#3a9d54; }
-.letter[data-color="red"]    { background:#c73d32; }
-.letter[data-color="orange"] { background:#e2861d; }
+
+.letter[data-color="blue"]   { color:#2872d5; }
+.letter[data-color="green"]  { color:#3a9d54; }
+.letter[data-color="red"]    { color:#c73d32; }
+.letter[data-color="orange"] { color:#e2861d; }
+
 .letter.dragging {
-    box-shadow: 0 8px 18px #0005;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* ---------- 10. Utility: ukryty tekst opisowy na mobile ---------- */
