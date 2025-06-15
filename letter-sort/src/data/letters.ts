@@ -1,4 +1,5 @@
 export const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz'];
+
 export const LONG_STICKS = [
     'b', 'd', 'f', 'h', 'k', 'l', 't',
     'p', 'q', 'j', 'y',
@@ -18,16 +19,9 @@ const shuffle = <T,>(arr: T[]): T[] => {
 
 export type Letter = {
     id: string;
-    char: string
+    char: string;
     rotate?: number;
-    fontIdx?: number;
 };
-
-export const FONT_FAMILIES = [
-    '"Comic Sans MS", cursive, sans-serif',
-    '"Courier New", monospace',
-    '"Times New Roman", serif',
-];
 
 export function generateLetters(level = 0, count = 12): Letter[] {
     return shuffle(ALPHABET)
@@ -39,9 +33,7 @@ export function generateLetters(level = 0, count = 12): Letter[] {
             return {
                 id: crypto.randomUUID(),
                 char,
-                rotate: level >= 2 ? (Math.random() * 60 - 30) : undefined,
-                fontIdx:
-                    level >= 1 ? Math.floor(Math.random() * FONT_FAMILIES.length) : undefined,
+                rotate: level >= 3 ? Math.random() * 60 - 30 : undefined,
             };
         });
 }
