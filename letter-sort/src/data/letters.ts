@@ -3,7 +3,7 @@ import type { Letter } from '../components/types';
 
 const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
 
-const longSticks = ['b', 'd', 'f', 'h', 'k', 'l', 't'];
+const longSticks = ['b', 'd', 'f', 'h', 'k', 'l', 't', 'p', 'q', 'j', 'y'];
 
 function shuffle<T>(arr: T[]): T[] {
     const a = [...arr];
