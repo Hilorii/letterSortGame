@@ -58,14 +58,6 @@ body {
     color: white;
 }
 
-.board-title {
-    background-color: #e95420;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 1.5rem;
-}
-
 .board-content {
     background-color: #fef9ee;
     border-radius: 12px;
@@ -79,67 +71,59 @@ body {
 
 
 
-/* ---------- 5. Etykiety ---------- */
-.sort-title {
-    background: #ff5b34;
-    color: #fff;
-    padding: 0.2rem 1.6rem;
+/* ---------- 5. Etykieta sort the letters ---------- */
+.board-title {
+    background-color: #e95420;
+    color: white;
+    padding: 0.2rem 1rem;
     border-radius: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
+    margin-bottom: 0rem;
 }
-.label {
-    padding: 0.1rem 0.9rem;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: #fff;
-}
-.label.long  { background: #d92f2f; }
-.label.no    { background: #ffc52e; }
+
 
 /* ---------- 6. Kontener dwóch kolumn ---------- */
-.board {
+.board-content {
+    position: relative;
     display: flex;
     gap: 1px;
     background: #fffdf2;
     border: 4px solid #fff;
 }
-.divider {
-    width: 2px;
-    background: #009bff;
+
+/*divider*/
+.board-content::before {
+    position: absolute;
+    content: "";
+    right: 50%;
+    top: -30%;
+    width: 4px;
+    height: 130%;
+    background: #034d71;
 }
 
-/* ---------- 7. Kolumny docelowe ---------- */
-.column-wrapper {
+/* ---------- 7. Kolumny docelowe i ich etykiety ---------- */
+.label-row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 0.6rem;
+    gap: 5rem;
+    margin: -2rem;
 }
 
 .column-label {
     background-color: #e95420;
     color: #fff;
-    padding: 0.3rem 0.9rem;
-    border-radius: 999px;
-    font-size: 1rem;
-    font-weight: 700;
+    padding: 0.2rem 1.2rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
     text-transform: lowercase;
     white-space: nowrap;
 }
 
-.board-content .column-wrapper:nth-child(2) h3 {
+.no-long {
     background-color: #f4c542;
-}
-
-.column h3 {
-    background-color: #e95420;
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 999px;
-    font-size: 1rem;
-    text-transform: lowercase;
 }
 
 .column-droppable {

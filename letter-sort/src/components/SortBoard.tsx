@@ -9,7 +9,7 @@ type Props = {
 
 const Column = ({
                     id,
-                    title,
+                    // title,
                     letters,
                 }: {
     id: string;
@@ -17,7 +17,7 @@ const Column = ({
     letters: L[];
 }) => (
     <div className="column-wrapper">
-        <h3 className="column-label">{title}</h3>
+        {/*<h3 className="column-label">{title}</h3>*/}
         <Droppable droppableId={id}>
             {(provided) => (
                 <div
@@ -40,6 +40,10 @@ export default function SortBoard({ longSticks, noSticks }: Props) {
     return (
         <section className="board-top">
             <h2 className="board-title">Sort the letters’</h2>
+            <div className="label-row">
+                <h3 className="column-label long">long sticks</h3>
+                <h3 className="column-label no-long">no long sticks</h3>
+            </div>
             <div className="board-content">
                 <Column id="longSticks" title="long sticks" letters={longSticks} />
                 <Column id="noSticks" title="no long sticks" letters={noSticks} />
