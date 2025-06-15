@@ -1,10 +1,13 @@
 export const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz'];
 
 const LONG_LOWER = ['b', 'd', 'f', 'h', 'k', 'l', 't', 'p', 'q', 'j', 'y'];
-const LONG_UPPER = ['A', 'B', 'D', 'F', 'H', 'I', 'J', 'K', 'L', 'P', 'T', 'Y', 'V', 'Z', 'X', 'Y', 'Q', 'E', 'R', 'W', 'N', 'M'];
+const LONG_UPPER = [
+    'A', 'B', 'D', 'F', 'H', 'I', 'J', 'K', 'L', 'P',
+    'T', 'Y', 'V', 'Z', 'X', 'Q', 'E', 'R', 'W', 'N', 'M'
+];
 
 export const isLongStick = (ch: string) =>
-    (ch.length === 1 && (LONG_LOWER.includes(ch) || LONG_UPPER.includes(ch)));
+    LONG_LOWER.includes(ch) || LONG_UPPER.includes(ch);
 
 const shuffle = <T,>(arr: T[]): T[] => {
     const a = [...arr];
@@ -19,7 +22,15 @@ export type Letter = {
     id: string;
     char: string;
     rotate?: number;
+    font?: string;
 };
+
+export const FONT_FAMILIES = [
+    '"Comic Sans MS", cursive, sans-serif',
+    '"Courier New", monospace',
+    '"Times New Roman", serif',
+    '"Lucida Console", monospace',
+];
 
 export function generateLetters(level = 0, count = 12): Letter[] {
     return shuffle(ALPHABET)
@@ -32,6 +43,11 @@ export function generateLetters(level = 0, count = 12): Letter[] {
                 id: crypto.randomUUID(),
                 char,
                 rotate: level >= 3 ? Math.random() * 60 - 30 : undefined,
+                font: level >= 2
+                    ? FONT_FAMILIES[
+                        Math.floor(Math.random() * FONT_FAMILIES.length)
+                        ]
+                    : undefined,
             };
         });
 }

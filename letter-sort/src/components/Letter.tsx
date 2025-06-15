@@ -1,9 +1,9 @@
 import { Draggable } from '@hello-pangea/dnd';
 import type { Letter } from './types';
 
-type Props = { letter: Letter; index: number; locked: boolean };
+type Props = { letter: Letter; index: number; locked?: boolean };
 
-export default function Letter({ letter, index, locked }: Props) {
+export default function Letter({ letter, index, locked = false }: Props) {
     const palette = ['blue', 'green', 'red', 'orange'];
     const color =
         palette[(letter.char.toLowerCase().charCodeAt(0) - 97) % palette.length];
@@ -15,10 +15,10 @@ export default function Letter({ letter, index, locked }: Props) {
             isDragDisabled={locked}
         >
             {(provided, snapshot) => {
-                const translate = provided.draggableProps.style?.transform ?? '';
+                const base = provided.draggableProps.style?.transform ?? '';
                 const scale = snapshot.isDragging ? 1.15 : 1;
                 const rotate = letter.rotate ?? 0;
-                const transform = `${translate} rotate(${rotate}deg) scale(${scale})`;
+                const transform = `${base} rotate(${rotate}deg) scale(${scale})`;
 
                 return (
                     <div
@@ -31,6 +31,7 @@ export default function Letter({ letter, index, locked }: Props) {
                             ...provided.draggableProps.style,
                             transform,
                             transition: provided.draggableProps.style?.transition,
+                            fontFamily: letter.font,
                         }}
                     >
                         {letter.char}
