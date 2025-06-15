@@ -1,12 +1,10 @@
 export const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz'];
 
-export const LONG_STICKS = [
-    'b', 'd', 'f', 'h', 'k', 'l', 't',
-    'p', 'q', 'j', 'y',
-];
+const LONG_LOWER = ['b', 'd', 'f', 'h', 'k', 'l', 't', 'p', 'q', 'j', 'y'];
+const LONG_UPPER = ['A', 'B', 'D', 'F', 'H', 'I', 'J', 'K', 'L', 'P', 'T', 'Y', 'V', 'Z', 'X', 'Y', 'Q', 'E', 'R', 'W', 'N', 'M'];
 
 export const isLongStick = (ch: string) =>
-    LONG_STICKS.includes(ch.toLowerCase());
+    (ch.length === 1 && (LONG_LOWER.includes(ch) || LONG_UPPER.includes(ch)));
 
 const shuffle = <T,>(arr: T[]): T[] => {
     const a = [...arr];
