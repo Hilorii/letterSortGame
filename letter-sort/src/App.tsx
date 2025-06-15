@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     DragDropContext,
     type DragStart,
@@ -28,10 +28,14 @@ export default function App() {
     const [longSticks, setLongSticks] = useState<Letter[]>([]);
     const [noSticks, setNoSticks]     = useState<Letter[]>([]);
     const [locked, setLocked]         = useState(false);
-    const [audioOn, setAudioOn]       = useState(false);               // ⬅ start OFF
+    const [audioOn, setAudioOn]       = useState(false);          // start OFF
+
+    /* --- fix: dostęp do NAJNOWSZEGO audioOn w każdej funkcji --- */
+    const audioRef = useRef(audioOn);
+    useEffect(() => { audioRef.current = audioOn; }, [audioOn]);
 
     const speak = (txt: string) => {
-        if (!audioOn) return;
+        if (!audioRef.current) return;
         const u = new SpeechSynthesisUtterance(txt);
         u.lang = 'en-US';
         speechSynthesis.cancel();
@@ -51,28 +55,27 @@ export default function App() {
         noSticks:   [noSticks,   setNoSticks]   as const,
     };
 
-    // TTS DODANY
     const onDragStart = ({ draggableId }: DragStart) => {
         const l = [...bank, ...longSticks, ...noSticks].find(
-            (x) => x.id === draggableId
+            x => x.id === draggableId
         );
         if (!l) return;
-
         const label =
             l.char === l.char.toUpperCase()
                 ? `uppercase ${l.char}`
                 : `lowercase ${l.char}`;
-
-        speak(label);          //   <--  tu wołamy z opisem
+        speak(label);
     };
 
     const onDragEnd = ({ source, destination }: DropResult) => {
         if (locked || !destination) return;
-        if (source.droppableId === destination.droppableId && source.index === destination.index)
-            return;
+        if (source.droppableId === destination.droppableId &&
+            source.index === destination.index) return;
 
-        const [srcArr, setSrc] = listMap[source.droppableId as keyof typeof listMap];
-        const [dstArr, setDst] = listMap[destination.droppableId as keyof typeof listMap];
+        const [srcArr, setSrc] =
+            listMap[source.droppableId as keyof typeof listMap];
+        const [dstArr, setDst] =
+            listMap[destination.droppableId as keyof typeof listMap];
 
         const [moved] = srcArr.splice(source.index, 1);
         dstArr.splice(destination.index, 0, moved);
@@ -82,10 +85,9 @@ export default function App() {
 
         if (destination.droppableId !== 'bank') {
             const correct =
-                isLongStick(moved.char) === (destination.droppableId === 'longSticks');
-            const clip = correct ? SND.correct : SND.wrong;
-            clip.currentTime = 0;
-            clip.play();
+                isLongStick(moved.char) ===
+                (destination.droppableId === 'longSticks');
+            (correct ? SND.correct : SND.wrong).play();
         }
     };
 
@@ -94,12 +96,10 @@ export default function App() {
 
         setLocked(true);
         const allCorrect =
-            longSticks.every((l) => isLongStick(l.char)) &&
-            noSticks.every((l) => !isLongStick(l.char));
+            longSticks.every(l => isLongStick(l.char)) &&
+            noSticks.every(l => !isLongStick(l.char));
 
-        const clip = allCorrect ? SND.win : SND.lose;
-        clip.currentTime = 0;
-        clip.play();
+        (allCorrect ? SND.win : SND.lose).play();
 
         const nextLvl = allCorrect ? Math.min(level + 1, MAX_LVL) : level;
 
@@ -117,7 +117,7 @@ export default function App() {
                 <h1 className="title">Letter Sort</h1>
                 <button
                     className="audio-btn"
-                    onClick={() => setAudioOn((v) => !v)}
+                    onClick={() => setAudioOn(v => !v)}
                     aria-label={audioOn ? 'Turn audio off' : 'Turn audio on'}
                 >
                     {audioOn ? '🔊' : '🔇'}
@@ -127,7 +127,11 @@ export default function App() {
             <h2 className="subtitle">Level {level + 1}</h2>
 
             <div className="frame">
-                <SortBoard longSticks={longSticks} noSticks={noSticks} locked={locked} />
+                <SortBoard
+                    longSticks={longSticks}
+                    noSticks={noSticks}
+                    locked={locked}
+                />
                 <LetterBank letters={bank} locked={locked} />
             </div>
         </DragDropContext>
