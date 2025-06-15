@@ -1,32 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
-import SortBoard from './components/SortBoard';
-import LetterBank from './components/LetterBank';
+
+import SortBoard   from './components/SortBoard';
+import LetterBank  from './components/LetterBank';
 import './styles.css';
 
-const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz'];
-const LONG_STICKS = ['b', 'd', 'f', 'h', 'k', 'l', 't'];
-
-const shuffle = <T,>(arr: T[]) => {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-};
-
-const generateLetters = () =>
-    shuffle(ALPHABET)
-        .slice(0, 12)
-        .map((ch) => ({
-            id:
-                typeof crypto === 'object' && 'randomUUID' in crypto
-                    ? crypto.randomUUID()
-                    : `${Date.now()}-${ch}-${Math.random()}`,
-            char: ch,
-            hasStick: LONG_STICKS.includes(ch),
-        }));
+import {
+    generateLetters,
+    isLongStick,
+} from './data/letters';
+import type { Letter } from './data/letters';
 
 const SND = {
     correct: new Audio('/sounds/correct_match.mp3'),
@@ -36,36 +19,31 @@ const SND = {
 };
 
 export default function App() {
-    /* --- stan gry --- */
-    const [bank,        setBank]        = useState(generateLetters);
-    const [longSticks,  setLongSticks]  = useState<typeof bank>([]);
-    const [noSticks,    setNoSticks]    = useState<typeof bank>([]);
+    const [bank,       setBank]       = useState<Letter[]>(generateLetters);
+    const [longStick,  setLongStick]  = useState<Letter[]>([]);
+    const [noStick,    setNoStick]    = useState<Letter[]>([]);
+
     const listMap = {
-        bank:       [bank,       setBank]       as const,
-        longSticks: [longSticks, setLongSticks] as const,
-        noSticks:   [noSticks,   setNoSticks]   as const,
+        bank:       [bank,      setBank]      as const,
+        longSticks: [longStick, setLongStick] as const,
+        noSticks:   [noStick,   setNoStick]   as const,
     };
 
     const resetGame = useCallback(() => {
         setBank(generateLetters());
-        setLongSticks([]);
-        setNoSticks([]);
+        setLongStick([]);
+        setNoStick([]);
     }, []);
 
     const onDragEnd = ({ source, destination }: DropResult) => {
         if (!destination) return;
         if (
             source.droppableId === destination.droppableId &&
-            source.index === destination.index
-        )
-            return;
+            source.index       === destination.index
+        ) return;
 
-        const [srcArr, setSrc] = listMap[
-            source.droppableId as keyof typeof listMap
-            ];
-        const [dstArr, setDst] = listMap[
-            destination.droppableId as keyof typeof listMap
-            ];
+        const [srcArr, setSrc] = listMap[source.droppableId as keyof typeof listMap];
+        const [dstArr, setDst] = listMap[destination.droppableId as keyof typeof listMap];
 
         const [moved] = srcArr.splice(source.index, 1);
         dstArr.splice(destination.index, 0, moved);
@@ -75,7 +53,7 @@ export default function App() {
 
         if (destination.droppableId !== 'bank') {
             const correct =
-                moved.hasStick === (destination.droppableId === 'longSticks');
+                isLongStick(moved.char) === (destination.droppableId === 'longSticks');
             const clip = correct ? SND.correct : SND.wrong;
             clip.currentTime = 0;
             clip.play();
@@ -83,26 +61,26 @@ export default function App() {
     };
 
     useEffect(() => {
-        if (bank.length > 0) return; // wciąż litery do przeniesienia
+        if (bank.length > 0) return;
 
         const allCorrect =
-            longSticks.every((l) => l.hasStick) &&
-            noSticks.every((l) => !l.hasStick);
+            longStick.every((l) => isLongStick(l.char)) &&
+            noStick.every((l) => !isLongStick(l.char));
 
         const clip = allCorrect ? SND.win : SND.lose;
         clip.currentTime = 0;
         clip.play();
 
-        const id = setTimeout(resetGame, 2500); // pauza 2,5 s
+        const id = setTimeout(resetGame, 2500);
         return () => clearTimeout(id);
-    }, [bank.length, longSticks, noSticks, resetGame]);
+    }, [bank.length, longStick, noStick, resetGame]);
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <h1 className="title">Letter Sort</h1>
 
             <div className="frame">
-                <SortBoard longSticks={longSticks} noSticks={noSticks} />
+                <SortBoard longSticks={longStick} noSticks={noStick} />
                 <LetterBank bank={bank} />
             </div>
         </DragDropContext>
