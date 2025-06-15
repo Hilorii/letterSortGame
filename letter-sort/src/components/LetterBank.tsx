@@ -1,21 +1,23 @@
 import { Droppable } from '@hello-pangea/dnd';
-import Letter from './Letter';
-import type { Letter as L } from './types';
+import LetterCard from './Letter';
+import type { Letter } from './types';
 
-type Props = { bank: L[] };
+type Props = {
+    letters: Letter[];
+};
 
-export default function LetterBank({ bank }: Props) {
+export default function LetterBank({ letters }: Props) {
     return (
         <section className="bank">
             <Droppable droppableId="bank" direction="horizontal">
-                {provided => (
+                {(provided) => (
                     <div
                         className="lane"
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
-                        {bank.map((l, i) => (
-                            <Letter key={l.id} letter={l} index={i} />
+                        {letters.map((l, i) => (
+                            <LetterCard key={l.id} letter={l} index={i} />
                         ))}
                         {provided.placeholder}
                     </div>

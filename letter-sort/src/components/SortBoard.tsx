@@ -9,7 +9,6 @@ type Props = {
 
 const Column = ({
                     id,
-                    // title,
                     letters,
                 }: {
     id: string;
@@ -17,7 +16,6 @@ const Column = ({
     letters: L[];
 }) => (
     <div className="column-wrapper">
-        {/*<h3 className="column-label">{title}</h3>*/}
         <Droppable droppableId={id}>
             {(provided) => (
                 <div

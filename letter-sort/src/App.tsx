@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
-
-import SortBoard   from './components/SortBoard';
-import LetterBank  from './components/LetterBank';
+import SortBoard  from './components/SortBoard';
+import LetterBank from './components/LetterBank';
 import './styles.css';
 
 import {
     generateLetters,
     isLongStick,
+    type Letter,
 } from './data/letters';
-import type { Letter } from './data/letters';
 
 const SND = {
     correct: new Audio('/sounds/correct_match.mp3'),
@@ -18,22 +17,25 @@ const SND = {
     lose:    new Audio('/sounds/lose.mp3'),
 };
 
-export default function App() {
-    const [bank,       setBank]       = useState<Letter[]>(generateLetters);
-    const [longStick,  setLongStick]  = useState<Letter[]>([]);
-    const [noStick,    setNoStick]    = useState<Letter[]>([]);
+const MAX_LVL = 2;
 
-    const listMap = {
-        bank:       [bank,      setBank]      as const,
-        longSticks: [longStick, setLongStick] as const,
-        noSticks:   [noStick,   setNoStick]   as const,
+export default function App() {
+    const [level, setLevel]           = useState(0);
+    const [bank, setBank]             = useState<Letter[]>(() => generateLetters(0));
+    const [longSticks, setLongSticks] = useState<Letter[]>([]);
+    const [noSticks,  setNoSticks]    = useState<Letter[]>([]);
+
+    const startRound = (lvl: number) => {
+        setBank(generateLetters(lvl));
+        setLongSticks([]);
+        setNoSticks([]);
     };
 
-    const resetGame = useCallback(() => {
-        setBank(generateLetters());
-        setLongStick([]);
-        setNoStick([]);
-    }, []);
+    const listMap = {
+        bank:       [bank,       setBank]       as const,
+        longSticks: [longSticks, setLongSticks] as const,
+        noSticks:   [noSticks,   setNoSticks]   as const,
+    };
 
     const onDragEnd = ({ source, destination }: DropResult) => {
         if (!destination) return;
@@ -64,24 +66,33 @@ export default function App() {
         if (bank.length > 0) return;
 
         const allCorrect =
-            longStick.every((l) => isLongStick(l.char)) &&
-            noStick.every((l) => !isLongStick(l.char));
+            longSticks.every((l) => isLongStick(l.char)) &&
+            noSticks.every((l) => !isLongStick(l.char));
 
         const clip = allCorrect ? SND.win : SND.lose;
         clip.currentTime = 0;
         clip.play();
 
-        const id = setTimeout(resetGame, 2500);
+        const nextLvl = allCorrect
+            ? Math.min(level + 1, MAX_LVL)
+            : level;
+
+        const id = setTimeout(() => {
+            setLevel(nextLvl);
+            startRound(nextLvl);
+        }, 2500);
+
         return () => clearTimeout(id);
-    }, [bank.length, longStick, noStick, resetGame]);
+    }, [bank.length, longSticks, noSticks, level]);
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <h1 className="title">Letter Sort</h1>
+            <h2 className="subtitle">Level {level + 1}</h2>
 
             <div className="frame">
-                <SortBoard longSticks={longStick} noSticks={noStick} />
-                <LetterBank bank={bank} />
+                <SortBoard longSticks={longSticks} noSticks={noSticks} />
+                <LetterBank letters={bank} />
             </div>
         </DragDropContext>
     );
